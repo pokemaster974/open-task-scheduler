@@ -124,10 +124,20 @@ def run_scheduler_loop():
     except KeyboardInterrupt:
         print("Arrêt de l'agenda.")
 
+def test_task(task_id):
+    """Teste immédiatement une tâche identifiée par son ID."""
+    tasks = load_tasks()
+    for task in tasks:
+        if task.get("id") == task_id:
+            print(f"Test de la tâche '{task.get('name')}' (ID: {task_id})")
+            run_task(task)
+            return
+    print("Aucune tâche avec cet ID n'a été trouvée.")
+
 def main():
     parser = argparse.ArgumentParser(description="Gestionnaire de tâches avancé via YAML")
-    parser.add_argument("command", choices=["run", "list", "add", "remove"], help="Commande à exécuter")
-    parser.add_argument("--id", help="ID de la tâche (pour la commande remove)")
+    parser.add_argument("command", choices=["run", "list", "add", "remove", "test"], help="Commande à exécuter")
+    parser.add_argument("--id", help="ID de la tâche (pour les commandes remove et test)")
     args = parser.parse_args()
 
     if args.command == "list":
@@ -139,6 +149,11 @@ def main():
             print("Veuillez spécifier --id pour supprimer une tâche.")
             sys.exit(1)
         remove_task(args.id)
+    elif args.command == "test":
+        if not args.id:
+            print("Veuillez spécifier --id pour tester une tâche.")
+            sys.exit(1)
+        test_task(args.id)
     elif args.command == "run":
         run_scheduler_loop()
 
